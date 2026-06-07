@@ -1,0 +1,1 @@
+export type ShellCommand = (input: string) => void;
