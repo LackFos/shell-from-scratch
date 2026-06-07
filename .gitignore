@@ -1,0 +1,10 @@
+node_modules/
+package-lock.json
+bun.lock
+
+.vscode
+
+# Code Crafters: Shoutout to https://codecrafters.io/ for providing the learning materials
+.codecrafters/
+codecrafters.yml
+your_program.sh
