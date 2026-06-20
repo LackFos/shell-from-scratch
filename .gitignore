@@ -4,6 +4,8 @@ bun.lock
 
 .vscode
 
+.DS_Store
+
 # Code Crafters: Shoutout to https://codecrafters.io/ for providing the learning materials
 .codecrafters/
 codecrafters.yml
