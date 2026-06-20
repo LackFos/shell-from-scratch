@@ -1,4 +1,7 @@
-export function pwdCommand(): void {
+import fs from "fs";
+import type { ShellContext } from "../main";
+
+export function pwdCommand(args: string[], context: ShellContext): void {
   const currentDirectory = process.cwd();
-  console.log(currentDirectory);
+  fs.writeSync(context[1], `${currentDirectory}\n`);
 }

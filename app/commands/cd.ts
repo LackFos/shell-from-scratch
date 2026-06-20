@@ -1,5 +1,13 @@
-export function cdCommand(input: string): void {
-  let targetPath = input.slice(3).trim();
+import fs from "fs";
+import type { ShellContext } from "../main";
+
+export function cdCommand(args: string[], context: ShellContext): void {
+  let targetPath = args[0];
+
+  if (!targetPath) {
+    fs.writeSync(context[2], "cd: missing operand\n");
+    return;
+  }
 
   if (targetPath === "~") {
     targetPath = process.env.HOME || "/";
@@ -8,6 +16,6 @@ export function cdCommand(input: string): void {
   try {
     process.chdir(targetPath);
   } catch (err) {
-    console.log(`cd: ${targetPath}: No such file or directory`);
+    fs.writeSync(context[2], `cd: no such file or directory: ${targetPath}\n`);
   }
 }

@@ -1,19 +1,24 @@
-import fs from "node:fs";
-import path from "node:path";
+import fs from "fs";
+import path from "path";
+import { BuiltInCommands } from ".";
+import type { ShellContext } from "../main";
 
-type ShellCommand = (input: string) => void;
+export function typeCommand(args: string[], context: ShellContext): void {
+  const commandToSearch = args[0];
 
-export function typeCommand(input: string, commands: Record<string, ShellCommand>): void {
-  const commandToSearch = input.slice(5);
+  if (!commandToSearch) {
+    fs.writeSync(context[2], "type: missing operand\n");
+    return;
+  }
 
   // Builtin Commands
-  if (commands[commandToSearch]) {
-    console.log(`${commandToSearch} is a shell builtin`);
+  if (BuiltInCommands[commandToSearch]) {
+    fs.writeSync(context[1], `${commandToSearch} is a shell builtin\n`);
     return;
   }
 
   // External Commands
-  const rawPath: String = process.env.PATH || "";
+  const rawPath: string = process.env.PATH || "";
   const paths = rawPath.split(":");
 
   for (const directory of paths) {
@@ -24,18 +29,13 @@ export function typeCommand(input: string, commands: Record<string, ShellCommand
 
       if (file && file.isFile()) {
         fs.accessSync(fullpath, fs.constants.X_OK);
-        console.log(`${commandToSearch} is ${fullpath}`);
+        fs.writeSync(context[1], `${commandToSearch} is ${fullpath}\n`);
         return;
       }
     } catch (error) {
       continue;
     }
-
-    if (fs.existsSync(fullpath)) {
-      console.log(`${commandToSearch} is ${fullpath}`);
-      return;
-    }
   }
 
-  console.log(`${commandToSearch}: not found`);
+  fs.writeSync(context[2], `${commandToSearch} not found\n`);
 }

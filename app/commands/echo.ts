@@ -1,4 +1,6 @@
-export function echoCommand(input: string): void {
-  const stringToPrint = input.slice(5).trim();
-  console.log(stringToPrint);
+import fs from "fs";
+import type { ShellContext } from "../main";
+
+export function echoCommand(args: string[], context: ShellContext): void {
+  fs.writeSync(context[1], `${args.join(" ")}\n`);
 }
