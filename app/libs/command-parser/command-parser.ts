@@ -1,6 +1,14 @@
 import type { CommandGroup } from "./index.ts";
+import {
+  MetaCharacter,
+  TokenToMetaCharacterMap,
+} from "../command-parser/types";
 
 export class CommandParser {
+  static metaCharacter(rawToken: string): MetaCharacter | null {
+    return TokenToMetaCharacterMap[rawToken] ?? null;
+  }
+
   static parse(input: string): CommandGroup[] {
     const commandGroups: CommandGroup[] = [[]];
 
@@ -11,7 +19,9 @@ export class CommandParser {
 
       commandGroups[currentGroupIndex].push(rawToken);
 
-      if (rawToken === ">" || rawToken === "1>") {
+      const isMetaCharacter = CommandParser.metaCharacter(rawToken) !== null;
+
+      if (isMetaCharacter) {
         commandGroups.push([]);
       }
     }

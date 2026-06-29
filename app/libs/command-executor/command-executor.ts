@@ -1,8 +1,14 @@
 import fs from "fs";
 import { spawn } from "child_process";
-import type { CommandGroup } from "../command-parser";
+import { CommandParser, type CommandGroup } from "../command-parser";
 import { BuiltInCommands } from "../../commands";
 import type { ShellContext } from "../../main";
+import { RedirectType } from "../command-parser";
+import {
+  getRedirectMode,
+  getRedirectType,
+  type RedirectMode,
+} from "../command-parser/types";
 
 export class CommandExecutor {
   async execute(commandGroups: CommandGroup[]): Promise<void> {
@@ -24,12 +30,23 @@ export class CommandExecutor {
       ];
 
       const lastArg = args[args.length - 1];
+      const redirectType = CommandParser.metaCharacter(lastArg);
+      const redirectMode: RedirectMode = redirectType
+        ? getRedirectMode(redirectType)
+        : "w";
 
-      if (lastArg === ">" || lastArg === "1>") {
+      if (redirectType) {
         skipNext = true;
 
-        const fd = fs.openSync(`${commandGroups[index + 1]}`, "w");
-        shellContext[1] = fd;
+        const fd = fs.openSync(`${commandGroups[index + 1]}`, redirectMode);
+
+        if (getRedirectType(redirectType) === RedirectType.Stdout) {
+          shellContext[1] = fd;
+        }
+
+        if (getRedirectType(redirectType) === RedirectType.Stderr) {
+          shellContext[2] = fd;
+        }
 
         args = args.slice(0, -1);
       }
