@@ -7,6 +7,7 @@ Part of my ()[Build from Scratch] collection — learning how things works by cr
 - Builtin command inline suggestion
 
 ## What i have learned
+- File Descriptor usage.
 - Fork, Exec, Process concept.
 - Copy on Write concept.
 - Why POSIX exists.
